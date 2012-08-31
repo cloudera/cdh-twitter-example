@@ -14,7 +14,7 @@ Getting Started
 
 2. **Install MySQL**
 
-    MySQL is the recommended database for the Oozie database and the Hive metastore.
+    MySQL is the recommended database for the Oozie database and the Hive metastore. Click [here](http://dev.mysql.com/doc/refman/5.1/en/linux-installation-native.html) for installation documentation.
 
 Configuring Flume
 ------------------
@@ -23,11 +23,12 @@ Configuring Flume
 
    The `flume-sources` directory contains a Maven project with a custom Flume source designed to connect to the Twitter Streaming API and ingest tweets in a raw JSON format into HDFS.
 
-   To build the flume-sources JAR:
+   To build the flume-sources JAR, from the root of the git repository:
 
    <pre>
    $ cd flume-sources  
-   $ mvn package  
+   $ mvn package
+   $ cd ..  
    </pre>
 
    This will generate a file called `flume-sources-1.0-SNAPSHOT.jar` in the `target` directory.
@@ -39,6 +40,10 @@ Configuring Flume
     Edit the `flume-env.sh` file and uncomment the `FLUME_CLASSPATH` line, and enter the path to the JAR. If adding multiple paths, separate them with a colon.
 
 3. **Set the Flume agent name to TwitterAgent in /etc/default/flume-ng-agent**
+
+    If you don't see the `/etc/default/flume-ng-agent` file, it likely means that you didn't install the `flume-ng-agent` package. In the file, you should have the following:
+
+    <pre>FLUME_AGENT_NAME=TwitterAgent</pre>
 
 4. **Modify the provided Flume configuration and copy it to /etc/flume-ng/conf**
 
@@ -53,11 +58,12 @@ Setting up Hive
 
    The `hive-serdes` directory contains a Maven project with a JSON SerDe which enables Hive to query raw JSON data.
 
-   To build the hive-serdes JAR:
+   To build the hive-serdes JAR, from the root of the git repository:
 
    <pre>
    $ cd hive-serdes    
    $ mvn package  
+   $ cd ..  
    </pre>
 
    This will generate a file called `hive-serdes-1.0-SNAPSHOT.jar` in the `target` directory.
@@ -65,21 +71,19 @@ Setting up Hive
 2. **Create the Hive directory hierarchy**
 
     <pre>
-    $ sudo -u hdfs hadoop fs -mkdir /user/hive  
-    $ sudo -u hdfs hadoop fs -chown hive:hive /user/hive  
+    $ sudo -u hdfs hadoop fs -mkdir /user/hive/warehouse   
+    $ sudo -u hdfs hadoop fs -chown -R hive:hive /user/hive  
     $ sudo -u hdfs hadoop fs -chmod 750 /user/hive  
-    $ sudo -u hdfs hadoop fs -mkdir /user/hive/warehouse  
-    $ sudo -u hdfs hadoop fs -chown hive:hive /user/hive/warehouse  
     $ sudo -u hdfs hadoop fs -chmod 770 /user/hive/warehouse  
     </pre>
 
     You'll also want to add whatever user you plan on executing Hive scripts with to the hive Unix group:
 
-    <pre>$ sudo usermod -G -a hive &lt;username&gt;</pre>
+    <pre>$ sudo usermod -a -G hive &lt;username&gt;</pre>
 
 3. **Configure the Hive metastore**
 
-    The Hive metastore should be configured to use MySQL. Follow these [instructions](https://ccp.cloudera.com/display/CDHDOC/Hive+Installation#HiveInstallation-ConfiguringtheHiveMetastore) to configure the metastore. 
+    The Hive metastore should be configured to use MySQL. Follow these [instructions](https://ccp.cloudera.com/display/CDH4DOC/Hive+Installation#HiveInstallation-ConfiguringtheHiveMetastore) to configure the metastore. Make sure to install the MySQL JDBC driver in `/usr/lib/hive/lib`.
 
 4. **Create the tweets table**
 
@@ -118,9 +122,9 @@ Prepare the Oozie workflow
 
 1. **Configure Oozie to use MySQL**
 
-    If using Cloudera Manager, Oozie can be reconfigured to use MySQL via the service configuration page on the Databases tab. Make sure to restart the Oozie service after reconfiguring.
+    If using Cloudera Manager, Oozie can be reconfigured to use MySQL via the service configuration page on the Databases tab. Make sure to restart the Oozie service after reconfiguring. You will need to install the MySQL JDBC driver in `/usr/lib/oozie/libext`.
 
-    If Oozie was installed manually, Cloudera provides [instructions](https://ccp.cloudera.com/display/CDHDOC/Oozie+Installation#OozieInstallation-ConfiguringOozietoUseMySQL) for configuring Oozie to use MySQL.
+    If Oozie was installed manually, Cloudera provides [instructions](https://ccp.cloudera.com/display/CDH4DOC/Oozie+Installation#OozieInstallation-ConfiguringOozietoUseMySQL) for configuring Oozie to use MySQL.
 
 2. **Create a lib directory and copy any necessary external JARs into it**
 
@@ -136,11 +140,23 @@ Prepare the Oozie workflow
 
     To execute the Hive action, Oozie needs a copy of `hive-site.xml`.
 
-    <pre>$ sudo cp /etc/hive/conf/hive-site.xml oozie-workflows</pre>
+    <pre>
+    $ sudo cp /etc/hive/conf/hive-site.xml oozie-workflows
+    $ sudo chown &lt;username&gt;:&lt;username&gt; oozie-workflows/hive-site.xml
+    </pre>
 
 4. **Copy the oozie-workflows directory to HDFS**
 
     <pre>$ hadoop fs -put oozie-workflows /user/&lt;username&gt;/oozie-workflows</pre>
+
+5. **Install the Oozie ShareLib in HDFS**
+
+    <pre>
+    $ sudo -u hdfs hadoop fs -mkdir /user/oozie
+    $ sudo -u hdfs hadoop fs -chown oozie:oozie /user/oozie
+    </pre>
+
+    In order to use the Hive action, the Oozie ShareLib must be installed. Installation instructions can be found [here](https://ccp.cloudera.com/display/CDH4DOC/Oozie+Installation#OozieInstallation-InstallingtheOozieShareLibinHadoopHDFS).
 
 Starting the data pipeline
 ------------------------
