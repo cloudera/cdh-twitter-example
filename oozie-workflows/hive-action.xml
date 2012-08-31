@@ -35,7 +35,7 @@
         </property>
       </configuration>
       <script>load_tweets.q</script>
-      <param>JSON_SERDE=${workflowRoot}/lib/custom-serdes-1.0-SNAPSHOT.jar</param>
+      <param>JSON_SERDE=${workflowRoot}/lib/hive-serdes-1.0-SNAPSHOT.jar</param>
       <param>WFINPUT=${wfInput}</param>
     </hive>
     <ok to="end"/>
