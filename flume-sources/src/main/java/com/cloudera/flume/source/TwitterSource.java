@@ -105,6 +105,7 @@ public class TwitterSource extends AbstractSource
       public void onStatus(Status status) {
         // The EventBuilder is used to build an event using the headers and
         // the raw JSON of a tweet
+        headers.put("timestamp", String.valueOf(System.currentTimeMillis()));
         eventList.add(EventBuilder.withBody(
             DataObjectFactory.getRawJSON(status).getBytes(), headers));
         
