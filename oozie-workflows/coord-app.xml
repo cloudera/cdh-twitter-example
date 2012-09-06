@@ -16,13 +16,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<coordinator-app name="load-tweets-coord" frequency="${coord:hours(1)}"
+<coordinator-app name="add-partition-coord" frequency="${coord:hours(1)}"
                  start="${jobStart}" end="${jobEnd}"
                  timezone="UTC"
                 xmlns="uri:oozie:coordinator:0.1">
   <datasets>
     <dataset name="tweets" frequency="${coord:hours(1)}"
-             initial-instance="${initialDataset}" timezone="UTC">
+             initial-instance="${initialDataset}" timezone="America/Los_Angeles">
       <uri-template>hdfs://hadoop1:8020/user/flume/tweets/${YEAR}/${MONTH}/${DAY}/${HOUR}</uri-template>
       <done-flag></done-flag>
     </dataset>
@@ -31,7 +31,7 @@
     <data-in name="input" dataset="tweets">
       <!-- The integer value here should be the offset of your time zone from GMT,
            so for PT, this value is -8 -->
-      <instance>${coord:current(-8)}</instance>
+      <instance>${coord:current(coord:tzOffset() / 60)}</instance>
     </data-in>
     <data-in name="readyIndicator" dataset="tweets">
       <!-- I've done something here that is a little bit of a hack. Since Flume
@@ -39,7 +39,7 @@
            rolled to a new directory, we can just use the next directory as an
            input event, which instructs Oozie not to kick off a coordinator
            action until the next dataset starts being available. -->
-      <instance>${coord:current(-7)}</instance>
+      <instance>${coord:current(1 + (coord:tzOffset() / 60))}</instance>
     </data-in>
   </input-events>
   <action>
@@ -49,6 +49,10 @@
         <property>
           <name>wfInput</name>
           <value>${coord:dataIn('input')}</value>
+        </property>
+        <property>
+          <name>dateHour</name>
+          <value>${coord:formatTime(coord:dateOffset(coord:nominalTime(), -8, 'HOUR'), 'yyyyMMddHH')}</value>
         </property>
       </configuration>
     </workflow>

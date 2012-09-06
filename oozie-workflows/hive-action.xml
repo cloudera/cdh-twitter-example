@@ -16,10 +16,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<workflow-app xmlns="uri:oozie:workflow:0.2" name="hive-load-tweets-wf">
-  <start to="hive-load-tweets"/>
+<workflow-app xmlns="uri:oozie:workflow:0.2" name="hive-add-partition-wf">
+  <start to="hive-add-partition"/>
 
-  <action name="hive-load-tweets">
+  <action name="hive-add-partition">
     <hive xmlns="uri:oozie:hive-action:0.2">
       <job-tracker>${jobTracker}</job-tracker>
       <name-node>${nameNode}</name-node>
@@ -34,9 +34,10 @@
           <value>${workflowRoot}/hive-site.xml</value>
         </property>
       </configuration>
-      <script>load_tweets.q</script>
+      <script>add_partition.q</script>
       <param>JSON_SERDE=${workflowRoot}/lib/hive-serdes-1.0-SNAPSHOT.jar</param>
       <param>WFINPUT=${wfInput}</param>
+      <param>DATEHOUR=${dateHour}</param>
     </hive>
     <ok to="end"/>
     <error to="fail"/>
