@@ -92,7 +92,7 @@ Setting up Hive
     <pre>
     ADD JAR &lt;path-to-hive-sources-jar&gt;;
     
-    CREATE TABLE tweets (
+    CREATE EXTERNAL TABLE tweets (
       id BIGINT,
       created_at STRING,
       source STRING,
@@ -113,7 +113,9 @@ Setting up Hive
         utc_offset:INT,
         time_zone:STRING&gt;,
       in_reply_to_screen_name STRING
-    ) ROW FORMAT SERDE 'com.cloudera.hive.serde.JSONSerDe';</pre>
+    ) ROW FORMAT SERDE 'com.cloudera.hive.serde.JSONSerDe'
+    LOCATION '/user/flume/tweets'
+    PARTITIONED BY (datehour INT);</pre>
 
     The table can be modified to include other columns from the Twitter data, but they must have the same name, and structure as the JSON fields referenced in the [Twitter documentation](https://dev.twitter.com/docs/tweet-entities).
 
