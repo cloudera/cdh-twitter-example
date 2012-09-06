@@ -33,6 +33,7 @@ import org.apache.flume.source.AbstractSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import twitter4j.FilterQuery;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
@@ -105,6 +106,7 @@ public class TwitterSource extends AbstractSource
       public void onStatus(Status status) {
         // The EventBuilder is used to build an event using the headers and
         // the raw JSON of a tweet
+        logger.debug(status.getUser().getScreenName() + ": " + status.getText());
         headers.put("timestamp", String.valueOf(System.currentTimeMillis()));
         eventList.add(EventBuilder.withBody(
             DataObjectFactory.getRawJSON(status).getBytes(), headers));
@@ -134,8 +136,16 @@ public class TwitterSource extends AbstractSource
     AccessToken token = new AccessToken(accessToken, accessTokenSecret);
     twitterStream.setOAuthAccessToken(token);
     
-    // Start sampling Twitter!
-    twitterStream.sample();
+    // Set up a filter to pull out industry-relevant tweets
+    FilterQuery query = new FilterQuery()
+      .track(new String[] { "hadoop", "big data", "analytics",
+                            "bigdata", "cloudera", "data science",
+                            "data scientiest", "business intelligence",
+                            "mapreduce", "data warehouse", "data warehousing",
+                            "mahout", "hbase", "nosql", "newsql",
+                            "businessintelligence", "cloudcomputing" })
+      .setIncludeEntities(true);
+    twitterStream.filter(query);
     super.start();
   }
   
