@@ -47,7 +47,7 @@ Configuring Flume
 
 4. **Modify the provided Flume configuration and copy it to /etc/flume-ng/conf**
 
-   There is a file called `flume.conf` in the `flume-sources` directory, which needs some minor editing. There are four fields which need to be filled in with values from Twitter. The relevant information is available on the Details page for [your Twitter app](https://dev.twitter.com/apps). Fill in the consumer key, consumer secret, access token, and access token secret.
+   There is a file called `flume.conf` in the `flume-sources` directory, which needs some minor editing. There are four fields which need to be filled in with values from Twitter. The relevant information is available on the Details page for [your Twitter app](https://dev.twitter.com/apps). Fill in the consumer key, consumer secret, access token, and access token secret. The `keywords` parameter accepts a comma-separated list of keywords to use to filter tweets and collect a relevant set of data. If the parameter is not defined, the Twitter Sample API will be used to collect a sample of the entire Twitter Firehose.
 
    <pre>$ sudo cp flume.conf /etc/flume-ng/conf</pre>
 
