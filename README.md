@@ -98,9 +98,9 @@ Setting up Hive
       source STRING,
       favorited BOOLEAN,
       retweet_count INT,
-      retweeted_status STRUCT&gt;
+      retweeted_status STRUCT&lt;
         text:STRING,
-        user:STRUCT&gt;screen_name:STRING,name:STRING&lt;&lt;,
+        user:STRUCT&lt;screen_name:STRING,name:STRING&gt;&gt;,
       entities STRUCT&lt;
         urls:ARRAY&lt;STRUCT&lt;expanded_url:STRING&gt;&gt;,
         user_mentions:ARRAY&lt;STRUCT&lt;screen_name:STRING,name:STRING&gt;&gt;,
