@@ -98,6 +98,9 @@ Setting up Hive
       source STRING,
       favorited BOOLEAN,
       retweet_count INT,
+      retweeted_status STRUCT&gt;
+        text:STRING,
+        user:STRUCT&gt;screen_name:STRING,name:STRING&lt;&lt;,
       entities STRUCT&lt;
         urls:ARRAY&lt;STRUCT&lt;expanded_url:STRING&gt;&gt;,
         user_mentions:ARRAY&lt;STRUCT&lt;screen_name:STRING,name:STRING&gt;&gt;,
@@ -113,9 +116,10 @@ Setting up Hive
         utc_offset:INT,
         time_zone:STRING&gt;,
       in_reply_to_screen_name STRING
-    ) ROW FORMAT SERDE 'com.cloudera.hive.serde.JSONSerDe'
-    LOCATION '/user/flume/tweets'
-    PARTITIONED BY (datehour INT);</pre>
+    ) 
+    PARTITIONED BY (datehour INT)
+    ROW FORMAT SERDE 'com.cloudera.hive.serde.JSONSerDe'
+    LOCATION '/user/flume/tweets';</pre>
 
     The table can be modified to include other columns from the Twitter data, but they must have the same name, and structure as the JSON fields referenced in the [Twitter documentation](https://dev.twitter.com/docs/tweet-entities).
 
@@ -176,9 +180,7 @@ Starting the data pipeline
 
 2. **Adjust the start time of the Oozie coordinator workflow in job.properties**
 
-    You will need to modify the `job.properties` file, and change the `jobStart`, `jobEnd`, and `initialDataset` parameters. The start and end times are in UTC, because the version of Oozie packaged in CDH4 does not yet support custom timezones for workflows. The initial dataset should be set to something before the actual start time of your job in your local time zone.
-
-    You may also need to modify the `coord-app.xml`. The `data-in` sections named `input` and `readyIndicator` will need to bet set to the offset from GMT, and the offset + 1. It is currently set for Pacific Time, but as an example, if you were in EST, the `input` instance would be set to `${coord:current(-5)}`, and the `readyIndicator` instance would be set to `${coord:current(-4)}`.
+    You will need to modify the `job.properties` file, and change the `jobStart`, `jobEnd`, and `initialDataset` parameters. The start and end times are in UTC, because the version of Oozie packaged in CDH4 does not yet support custom timezones for workflows. The initial dataset should be set to something before the actual start time of your job in your local time zone. Additionally, the `tzOffset` parameter should be set to the difference between the server's timezone and UTC. By default, it is set to -8, which is correct for US Pacific Time.
 
 3. **Start the Oozie coordinator workflow**
     
