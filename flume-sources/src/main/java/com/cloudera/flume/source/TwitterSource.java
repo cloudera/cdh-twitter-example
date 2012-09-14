@@ -63,6 +63,8 @@ public class TwitterSource extends AbstractSource
   /** Size of event batches */
   private long batchSize;
   
+  private String[] keywords;
+  
   /** The actual Twitter stream. It's set up to collect raw JSON data */
   private final TwitterStream twitterStream = new TwitterStreamFactory(
       new ConfigurationBuilder()
@@ -83,6 +85,12 @@ public class TwitterSource extends AbstractSource
     
     batchSize = context.getLong(TwitterSourceConstants.BATCH_SIZE_KEY,
         TwitterSourceConstants.DEFAULT_BATCH_SIZE);
+    
+    String keywordString = context.getString(TwitterSourceConstants.KEYWORDS_KEY, "");
+    keywords = keywordString.split(",");
+    for (int i = 0; i < keywords.length; i++) {
+      keywords[i] = keywords[i].trim();
+    }
   }
 
   /**
@@ -137,15 +145,16 @@ public class TwitterSource extends AbstractSource
     twitterStream.setOAuthAccessToken(token);
     
     // Set up a filter to pull out industry-relevant tweets
-    FilterQuery query = new FilterQuery()
-      .track(new String[] { "hadoop", "big data", "analytics",
-                            "bigdata", "cloudera", "data science",
-                            "data scientiest", "business intelligence",
-                            "mapreduce", "data warehouse", "data warehousing",
-                            "mahout", "hbase", "nosql", "newsql",
-                            "businessintelligence", "cloudcomputing" })
-      .setIncludeEntities(true);
-    twitterStream.filter(query);
+    if (keywords.length == 0) {
+      logger.debug("Starting up Twitter sampling...");
+      twitterStream.sample();
+    } else {
+      logger.debug("Starting up Twitter filtering...");
+      FilterQuery query = new FilterQuery()
+        .track(keywords)
+        .setIncludeEntities(true);
+      twitterStream.filter(query);
+    }
     super.start();
   }
   
