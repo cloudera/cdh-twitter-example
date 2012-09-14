@@ -19,7 +19,7 @@
 <coordinator-app name="add-partition-coord" frequency="${coord:hours(1)}"
                  start="${jobStart}" end="${jobEnd}"
                  timezone="UTC"
-                xmlns="uri:oozie:coordinator:0.1">
+                 xmlns="uri:oozie:coordinator:0.1">
   <datasets>
     <dataset name="tweets" frequency="${coord:hours(1)}"
              initial-instance="${initialDataset}" timezone="America/Los_Angeles">
@@ -29,13 +29,11 @@
   </datasets>
   <input-events>
     <data-in name="input" dataset="tweets">
-      <!-- The integer value here should be the offset of your time zone from GMT,
-           so for PT, this value is -8 -->
       <instance>${coord:current(coord:tzOffset() / 60)}</instance>
     </data-in>
     <data-in name="readyIndicator" dataset="tweets">
       <!-- I've done something here that is a little bit of a hack. Since Flume
-           doesn't have a good mechanism for notifying an application when its
+           doesn't have a good mechanism for notifying an application of when it has
            rolled to a new directory, we can just use the next directory as an
            input event, which instructs Oozie not to kick off a coordinator
            action until the next dataset starts being available. -->
@@ -52,7 +50,7 @@
         </property>
         <property>
           <name>dateHour</name>
-          <value>${coord:formatTime(coord:dateOffset(coord:nominalTime(), -8, 'HOUR'), 'yyyyMMddHH')}</value>
+          <value>${coord:formatTime(coord:dateOffset(coord:nominalTime(), tzOffset, 'HOUR'), 'yyyyMMddHH')}</value>
         </property>
       </configuration>
     </workflow>
