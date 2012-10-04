@@ -18,9 +18,7 @@
 
 package com.cloudera.flume.source;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.flume.Context;
@@ -60,9 +58,6 @@ public class TwitterSource extends AbstractSource
   private String accessToken;
   private String accessTokenSecret;
   
-  /** Size of event batches */
-  private long batchSize;
-  
   private String[] keywords;
   
   /** The actual Twitter stream. It's set up to collect raw JSON data */
@@ -83,9 +78,6 @@ public class TwitterSource extends AbstractSource
     accessToken = context.getString(TwitterSourceConstants.ACCESS_TOKEN_KEY);
     accessTokenSecret = context.getString(TwitterSourceConstants.ACCESS_TOKEN_SECRET_KEY);
     
-    batchSize = context.getLong(TwitterSourceConstants.BATCH_SIZE_KEY,
-        TwitterSourceConstants.DEFAULT_BATCH_SIZE);
-    
     String keywordString = context.getString(TwitterSourceConstants.KEYWORDS_KEY, "");
     keywords = keywordString.split(",");
     for (int i = 0; i < keywords.length; i++) {
@@ -103,7 +95,6 @@ public class TwitterSource extends AbstractSource
     // and is used to process events.
     final ChannelProcessor channel = getChannelProcessor();
     
-    final List<Event> eventList = new ArrayList<Event>();
     final Map<String, String> headers = new HashMap<String, String>();
     
     // The StatusListener is a twitter4j API, which can be added to a Twitter
@@ -115,17 +106,12 @@ public class TwitterSource extends AbstractSource
         // The EventBuilder is used to build an event using the headers and
         // the raw JSON of a tweet
         logger.debug(status.getUser().getScreenName() + ": " + status.getText());
-        headers.put("timestamp", String.valueOf(System.currentTimeMillis()));
-        eventList.add(EventBuilder.withBody(
-            DataObjectFactory.getRawJSON(status).getBytes(), headers));
+
+        headers.put("timestamp", String.valueOf(status.getCreatedAt().getTime()));
+        Event event = EventBuilder.withBody(
+            DataObjectFactory.getRawJSON(status).getBytes(), headers);
         
-        // When we've filled up a batch, we use the channel to process the
-        // list of events.
-        if (eventList.size() >= batchSize) {
-          logger.debug("Processing a batch of {} events", eventList.size());
-          channel.processEventBatch(eventList);
-          eventList.clear();
-        }
+        channel.processEvent(event);
       }
       
       // This listener will ignore everything except for new tweets
