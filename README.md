@@ -19,7 +19,9 @@ Getting Started
 Configuring Flume
 ------------------
 
-1. **Build the custom Flume Source**
+1. **Build or Download the custom Flume Source**
+
+   A pre-built version of the custom Flume Source is available [here](http://files.cloudera.com/samples/flume-sources-1.0-SNAPSHOT.jar).
 
    The `flume-sources` directory contains a Maven project with a custom Flume source designed to connect to the Twitter Streaming API and ingest tweets in a raw JSON format into HDFS.
 
@@ -54,7 +56,9 @@ Configuring Flume
 Setting up Hive
 ----------------
 
-1. **Build the JSON SerDe**
+1. **Build or Download the JSON SerDe**
+
+   A pre-built version of the JSON SerDe is available [here](http://files.cloudera.com/samples/hive-serdes-1.0-SNAPSHOT.jar).
 
    The `hive-serdes` directory contains a Maven project with a JSON SerDe which enables Hive to query raw JSON data.
 
@@ -90,7 +94,7 @@ Setting up Hive
     Run `hive`, and execute the following commands:
 
     <pre>
-    ADD JAR &lt;path-to-hive-sources-jar&gt;;
+    ADD JAR &lt;path-to-hive-serdes-jar&gt;;
     
     CREATE EXTERNAL TABLE tweets (
       id BIGINT,
