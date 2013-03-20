@@ -127,6 +127,13 @@ public class JSONSerDe implements SerDe {
     } catch (Exception e) {
       throw new SerDeException(e);
     }
+
+    // Lowercase the keys as expected by hive
+    Map<String, Object> lowerRoot = new HashMap();
+    for(Map.Entry entry: root.entrySet()) {
+      lowerRoot.put(((String)entry.getKey()).toLowerCase(), entry.getValue());
+    }
+    root = lowerRoot;
     
     Object value= null;
     for (String fieldName : rowTypeInfo.getAllStructFieldNames()) {
