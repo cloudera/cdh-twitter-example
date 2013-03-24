@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hive.serde.Constants;
+import org.apache.hadoop.hive.serde.serdeConstants;
 import org.apache.hadoop.hive.serde2.SerDe;
 import org.apache.hadoop.hive.serde2.SerDeException;
 import org.apache.hadoop.hive.serde2.SerDeStats;
@@ -89,12 +89,12 @@ public class JSONSerDe implements SerDe {
   public void initialize(Configuration conf, Properties tbl)
       throws SerDeException {
     // Get a list of the table's column names.
-    String colNamesStr = tbl.getProperty(Constants.LIST_COLUMNS);
+    String colNamesStr = tbl.getProperty(serdeConstants.LIST_COLUMNS);
     colNames = Arrays.asList(colNamesStr.split(","));
     
     // Get a list of TypeInfos for the columns. This list lines up with
     // the list of column names.
-    String colTypesStr = tbl.getProperty(Constants.LIST_COLUMN_TYPES);
+    String colTypesStr = tbl.getProperty(serdeConstants.LIST_COLUMN_TYPES);
     List<TypeInfo> colTypes =
         TypeInfoUtils.getTypeInfosFromTypeString(colTypesStr);
     
@@ -160,6 +160,9 @@ public class JSONSerDe implements SerDe {
     case PRIMITIVE:
       // Jackson will return the right thing in this case, so just return
       // the object
+      if (field instanceof String) {
+        field = field.toString().replaceAll("\n", "\\\\n");
+      }
       return field;
     case LIST:
       return parseList(field, (ListTypeInfo) fieldTypeInfo);
