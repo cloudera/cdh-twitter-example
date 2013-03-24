@@ -30,8 +30,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <eclipse.output.directory>eclipse-classes</eclipse.output.directory>
-    <hive.version>0.8.1-cdh4.0.1</hive.version>
-    <hadoop.version>2.0.0-cdh4.0.1</hadoop.version>
+    <hive.version>0.10.0-cdh4.2.0</hive.version>
+    <hadoop.version>2.0.0-cdh4.2.0</hadoop.version>
   </properties>
 
   <build>
