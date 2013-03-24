@@ -101,10 +101,10 @@ Setting up Hive
       created_at STRING,
       source STRING,
       favorited BOOLEAN,
-      retweet_count INT,
       retweeted_status STRUCT&lt;
         text:STRING,
-        user:STRUCT&lt;screen_name:STRING,name:STRING&gt;&gt;,
+        user:STRUCT&lt;screen_name:STRING,name:STRING&gt;,
+        retweet_count:INT&gt;,
       entities STRUCT&lt;
         urls:ARRAY&lt;STRUCT&lt;expanded_url:STRING&gt;&gt;,
         user_mentions:ARRAY&lt;STRUCT&lt;screen_name:STRING,name:STRING&gt;&gt;,
