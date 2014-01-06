@@ -29,8 +29,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <flume.version>1.3.0-cdh4.2.0</flume.version>
-    <hadoop.version>2.0.0-cdh4.2.0</hadoop.version>
+    <flume.version>1.4.0-cdh4.5.0</flume.version>
+    <hadoop.version>2.0.0-cdh4.5.0</hadoop.version>
   </properties>
 
   <build>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.twitter4j</groupId>
       <artifactId>twitter4j-stream</artifactId>
-      <version>[2.2,3)</version>
+      <version>3.0.5</version>
     </dependency>
 
     <!-- Hadoop Dependencies -->
