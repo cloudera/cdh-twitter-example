@@ -6,17 +6,17 @@ This repository contains an example application for analyzing Twitter data using
 Getting Started
 ---------------
 
-1. **Install Cloudera Manager 4.0 and CDH4**
+1. **Install Cloudera Manager 4.8 and CDH4**
 
-   Before you get started with the actual application, you'll first need CDH4 installed. Specifically, you'll need Hadoop, Flume, Oozie, and Hive. The easiest way to get the core components is to use Cloudera Manager to set up your initial environment. You can download Cloudera Manager from the [Cloudera website](https://ccp.cloudera.com/display/SUPPORT/Cloudera+Manager+Downloads#ClouderaManagerDownloads-ClouderaManager4.0), or install [CDH](https://ccp.cloudera.com/display/SUPPORT/CDH+Downloads#CDHDownloads-CDH4PackagesandDownloads) manually.
+   Before you get started with the actual application, you'll first need CDH4 installed. Specifically, you'll need Hadoop, Flume, Oozie, and Hive. The easiest way to get the core components is to use Cloudera Manager to set up your initial environment. You can download Cloudera Manager from the [Cloudera website](https://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Ent/latest/Cloudera-Manager-Version-and-Download-Information/Cloudera-Manager-Version-and-Download-Information.html), or install [CDH](http://www.cloudera.com/content/cloudera/en/products-and-services/cdh.html) manually.
 
-   If you go the Cloudera Manager route, you'll still need to [install Flume manually](https://ccp.cloudera.com/display/CDH4DOC/Flume+Installation).
+   If you go the Cloudera Manager route, you'll still need to [install Flume manually](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CM4Free/4.5.1/Cloudera-Manager-Free-Edition-User-Guide/cmfeug_topic_5_1.html).
 
 2. **Install MySQL**
 
     MySQL is the recommended database for the Oozie database and the Hive metastore. Click [here](http://dev.mysql.com/doc/refman/5.1/en/linux-installation-native.html) for installation documentation.
 
-Configuring Flume
+Configuring Flume (Cloudera Manager path)
 ------------------
 
 1. **Build or Download the custom Flume Source**
@@ -37,22 +37,22 @@ Configuring Flume
 
 2. **Add the JAR to the Flume classpath**
 
-   <pre>$ sudo cp /etc/flume-ng/conf/flume-env.sh.template /etc/flume-ng/conf/flume-env.sh</pre>
-   
-    Edit the `flume-env.sh` file and uncomment the `FLUME_CLASSPATH` line, and enter the path to the JAR. If adding multiple paths, separate them with a colon.
+   Copy `flume-sources-1.0-SNAPSHOT.jar` to /usr/share/cmf/lib/plugins/.
 
-3. **Set the Flume agent name to TwitterAgent in /etc/default/flume-ng-agent**
+3. **Configure Flume agent in Cloudera Manager Web UI flume**
 
-    If you don't see the `/etc/default/flume-ng-agent` file, it likely means that you didn't install the `flume-ng-agent` package. In the file, you should have the following:
+    Go to the Flume Service page (by selecting Flume service from the Services menu or from the All Services page).
+    
+    Pull down the `Configuration` tab, and select `View and Edit`.
+    
+    Select the Agent (Default) in the left hand column. 
+    
+    Set the Agent Name property to `TwitterAgent` whose configuration is defined in flume.conf. 
 
-    <pre>FLUME_AGENT_NAME=TwitterAgent</pre>
-
-4. **Modify the provided Flume configuration and copy it to /etc/flume-ng/conf**
-
-   There is a file called `flume.conf` in the `flume-sources` directory, which needs some minor editing. There are four fields which need to be filled in with values from Twitter. The relevant information is available on the Details page for [your Twitter app](https://dev.twitter.com/apps). Fill in the consumer key, consumer secret, access token, and access token secret. The `keywords` parameter accepts a comma-separated list of keywords to use to filter tweets and collect a relevant set of data. If the parameter is not defined, the Twitter Sample API will be used to collect a sample of the entire Twitter Firehose.
-
-   <pre>$ sudo cp flume.conf /etc/flume-ng/conf</pre>
-
+    Copy the contents of flume.conf file, in its entirety, into the Configuration File field. 
+    
+    Click `Save Changes` button.
+    
 Setting up Hive
 ----------------
 
@@ -87,7 +87,7 @@ Setting up Hive
 
 3. **Configure the Hive metastore**
 
-    The Hive metastore should be configured to use MySQL. Follow these [instructions](https://ccp.cloudera.com/display/CDH4DOC/Hive+Installation#HiveInstallation-ConfiguringtheHiveMetastore) to configure the metastore. Make sure to install the MySQL JDBC driver in `/usr/lib/hive/lib`.
+    The Hive metastore should be configured to use MySQL. Follow these [instructions](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/4.2.0/CDH4-Installation-Guide/cdh4ig_topic_18_4.html) to configure the metastore. Make sure to install the MySQL JDBC driver in `/var/lib/hive/lib`.
 
 4. **Create the tweets table**
 
@@ -134,7 +134,7 @@ Prepare the Oozie workflow
 
     If using Cloudera Manager, Oozie can be reconfigured to use MySQL via the service configuration page on the Databases tab. Make sure to restart the Oozie service after reconfiguring. You will need to install the MySQL JDBC driver in `/usr/lib/oozie/libext`.
 
-    If Oozie was installed manually, Cloudera provides [instructions](https://ccp.cloudera.com/display/CDH4DOC/Oozie+Installation#OozieInstallation-ConfiguringOozietoUseMySQL) for configuring Oozie to use MySQL.
+    If Oozie was installed manually, Cloudera provides [instructions](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/4.2.1/CDH4-Installation-Guide/cdh4ig_topic_17_6.html) for configuring Oozie to use MySQL.
 
 2. **Create a lib directory and copy any necessary external JARs into it**
 
@@ -166,7 +166,7 @@ Prepare the Oozie workflow
     $ sudo -u hdfs hadoop fs -chown oozie:oozie /user/oozie
     </pre>
 
-    In order to use the Hive action, the Oozie ShareLib must be installed. Installation instructions can be found [here](https://ccp.cloudera.com/display/CDH4DOC/Oozie+Installation#OozieInstallation-InstallingtheOozieShareLibinHadoopHDFS).
+    In order to use the Hive action, the Oozie ShareLib must be installed. Installation instructions can be found [here](http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/4.2.1/CDH4-Installation-Guide/cdh4ig_topic_17_6.html).
 
 Starting the data pipeline
 ------------------------
@@ -181,6 +181,8 @@ Starting the data pipeline
     $ hadoop fs -chmod -R 770 /user/flume
     $ sudo /etc/init.d/flume-ng-agent start
     </pre>
+    
+    If using Cloudera Manager, start Flume agent from Cloudera Manager Web UI.
 
 2. **Adjust the start time of the Oozie coordinator workflow in job.properties**
 
