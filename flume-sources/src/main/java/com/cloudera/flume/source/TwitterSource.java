@@ -77,9 +77,13 @@ public class TwitterSource extends AbstractSource
     accessTokenSecret = context.getString(TwitterSourceConstants.ACCESS_TOKEN_SECRET_KEY);
 
     String keywordString = context.getString(TwitterSourceConstants.KEYWORDS_KEY, "");
-    keywords = keywordString.split(",");
-    for (int i = 0; i < keywords.length; i++) {
-      keywords[i] = keywords[i].trim();
+    if (keywordString.trim().length() == 0) {
+        keywords = new String[0];
+    } else {
+      keywords = keywordString.split(",");
+      for (int i = 0; i < keywords.length; i++) {
+        keywords[i] = keywords[i].trim();
+      }
     }
 
     ConfigurationBuilder cb = new ConfigurationBuilder();
