@@ -1,23 +1,39 @@
 package com.cloudera.hive.serde;
-import static org.junit.Assert.*;
-
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
+
+import junit.framework.Assert;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.serde.serdeConstants;
+import org.apache.hadoop.hive.serde2.SerDeException;
+import org.apache.hadoop.io.Writable;
 import org.junit.Before;
 import org.junit.Test;
 
 
 public class TestDeserializeJSON {
 
-    private JSONSerDe jsonSerDe;
+    private static final Writable EXAMPLE = new Writable() {
+        @Override
+        public void write(DataOutput out) throws IOException {
+        }
+
+        @Override
+        public void readFields(DataInput in) throws IOException {
+        }
+
+        public String toString() {
+            return "{\"position.x\":1890,\"final.vc.credits\":62809152,\"position.y\":11430,\"uid\":89775688,\"generator\":\"java:1.3:srv016108:4046 java:1.3:srv016108:4046\",\"faction\":\"EIC\",\"final.ca.honour\":8622300,\"level\":19,\"pid\":674,\"gearscore.damageScore\":43869.266,\"position.area\":24,\"time\":1399940194255,\"final.rc.uridium\":4183,\"final.ca.xp\":1665637455,\"gearscore.tacticalScore\":1.045,\"gearscore\":5647.395,\"event\":\"playtime.start\",\"gearscore.hitpointsScore\":831525.0}";
+        };
+    };
     
-    /*
-    CREATE TABLE playtime_start (
-        uid STRING,generator STRING,faction STRING,level STRING,pid STRING,time STRING,gearscore STRING,event STRING
-    )
-    */
+    private JSONSerDe jsonSerDe;
+
+    
     @Before
     public void setUp() throws Exception {
         jsonSerDe = new JSONSerDe();
@@ -25,13 +41,18 @@ public class TestDeserializeJSON {
         // init
         Configuration testConfig = new Configuration();
         Properties properties = new Properties();
-        properties.setProperty(serdeConstants.LIST_COLUMNS, "uid,generator,faction,level,pid,time,gearscore,event");
-        properties.setProperty(serdeConstants.LIST_COLUMN_TYPES, "string,string,string,string,string,string,string,string");
+        properties.setProperty(serdeConstants.LIST_COLUMNS, "position.x,position.y,uid,pid,time,event");
+        properties.setProperty(serdeConstants.LIST_COLUMN_TYPES, "int,int,int,tinyint,bigint,string");
         jsonSerDe.initialize(testConfig, properties);
     }
 
     @Test
-    public void test() {
-        fail("Not yet implemented");
+    public void test() throws SerDeException {
+        List<?> result = (List<?>)jsonSerDe.deserialize(EXAMPLE);
+        
+        Assert.assertNotNull(result);
+        for (Object element : result) {
+            System.out.println(element.getClass().getSimpleName()+ ": "+ element.toString());
+        }
     }
 }
