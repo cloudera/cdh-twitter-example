@@ -131,7 +131,7 @@ public class JSONSerDe implements SerDe {
         // Lowercase the keys as expected by hive
         Map<String, Object> lowerRoot = new HashMap<String, Object>();
         for (Map.Entry<?, ?> entry : root.entrySet()) {
-            lowerRoot.put(((String) entry.getKey()).toLowerCase(), entry.getValue());
+            lowerRoot.put(patchKey((String) entry.getKey()), entry.getValue());
         }
         root = lowerRoot;
 
@@ -146,6 +146,10 @@ public class JSONSerDe implements SerDe {
             row.add(value);
         }
         return row;
+    }
+
+    private String patchKey(String key) {
+        return key.toLowerCase().replaceAll("[\\.-]", "_");
     }
 
     /**

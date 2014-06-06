@@ -41,7 +41,7 @@ public class TestDeserializeJSON {
         // init
         Configuration testConfig = new Configuration();
         Properties properties = new Properties();
-        properties.setProperty(serdeConstants.LIST_COLUMNS, "position.x,position.y,uid,pid,time,event");
+        properties.setProperty(serdeConstants.LIST_COLUMNS, "position_x,position_y,uid,pid,time,event");
         properties.setProperty(serdeConstants.LIST_COLUMN_TYPES, "int,int,int,tinyint,bigint,string");
         jsonSerDe.initialize(testConfig, properties);
     }
@@ -52,6 +52,8 @@ public class TestDeserializeJSON {
         
         Assert.assertNotNull(result);
         for (Object element : result) {
+            Assert.assertNotNull(element);
+            
             System.out.println(element.getClass().getSimpleName()+ ": "+ element.toString());
         }
     }
