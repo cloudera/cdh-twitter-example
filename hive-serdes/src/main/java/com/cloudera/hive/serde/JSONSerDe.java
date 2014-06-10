@@ -148,8 +148,23 @@ public class JSONSerDe implements SerDe {
         return row;
     }
 
+    /*
+     * replace dot/minus and do lowerCase at once 
+     */
     static final String patchKey(String key) {
-        return key.toLowerCase().replaceAll("[\\.-]", "_");
+        StringBuilder buffer = new StringBuilder(key.length());
+        for (char character : key.toCharArray()) {
+            switch (character) {
+                case '.':
+                case '-':
+                    buffer.append('_');
+                    break;
+                default:
+                    buffer.append(Character.toLowerCase(character));
+                    break;
+            }
+        }
+        return buffer.toString();
     }
 
     /**
