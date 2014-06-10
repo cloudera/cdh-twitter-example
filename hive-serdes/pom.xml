@@ -21,7 +21,7 @@
 
   <groupId>com.cloudera.serde</groupId>
   <artifactId>hive-serdes</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>hive-serdes</name>
