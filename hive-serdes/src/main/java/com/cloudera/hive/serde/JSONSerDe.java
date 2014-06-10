@@ -148,7 +148,7 @@ public class JSONSerDe implements SerDe {
         return row;
     }
 
-    private String patchKey(String key) {
+    static final String patchKey(String key) {
         return key.toLowerCase().replaceAll("[\\.-]", "_");
     }
 
