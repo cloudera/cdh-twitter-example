@@ -1,20 +1,20 @@
 /**
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cloudera.hive.serde;
 
 import java.util.ArrayList;
@@ -46,32 +46,32 @@ import org.apache.hadoop.io.Writable;
 import org.codehaus.jackson.map.ObjectMapper;
 
 /**
-* This SerDe can be used for processing JSON data in Hive. It supports
-* arbitrary JSON data, and can handle all Hive types except for UNION.
-* However, the JSON data is expected to be a series of discrete records,
-* rather than a JSON array of objects.
-*
-* The Hive table is expected to contain columns with names corresponding to
-* fields in the JSON data, but it is not necessary for every JSON field to
-* have a corresponding Hive column. Those JSON fields will be ignored during
-* queries.
-*
-* Example:
-*
-* { "a": 1, "b": [ "str1", "str2" ], "c": { "field1": "val1" } }
-*
-* Could correspond to a table:
-*
-* CREATE TABLE foo (a INT, b ARRAY<STRING>, c STRUCT<field1:STRING>);
-*
-* JSON objects can also interpreted as a Hive MAP type, so long as the keys
-* and values in the JSON object are all of the appropriate types. For example,
-* in the JSON above, another valid table declaraction would be:
-*
-* CREATE TABLE foo (a INT, b ARRAY<STRING>, c MAP<STRING,STRING>);
-*
-* Only STRING keys are supported for Hive MAPs.
-*/
+ * This SerDe can be used for processing JSON data in Hive. It supports
+ * arbitrary JSON data, and can handle all Hive types except for UNION.
+ * However, the JSON data is expected to be a series of discrete records,
+ * rather than a JSON array of objects.
+ * 
+ * The Hive table is expected to contain columns with names corresponding to
+ * fields in the JSON data, but it is not necessary for every JSON field to
+ * have a corresponding Hive column. Those JSON fields will be ignored during
+ * queries.
+ * 
+ * Example:
+ * 
+ * { "a": 1, "b": [ "str1", "str2" ], "c": { "field1": "val1" } }
+ * 
+ * Could correspond to a table:
+ * 
+ * CREATE TABLE foo (a INT, b ARRAY<STRING>, c STRUCT<field1:STRING>);
+ * 
+ * JSON objects can also interpreted as a Hive MAP type, so long as the keys
+ * and values in the JSON object are all of the appropriate types. For example,
+ * in the JSON above, another valid table declaraction would be:
+ * 
+ * CREATE TABLE foo (a INT, b ARRAY<STRING>, c MAP<STRING,STRING>);
+ * 
+ * Only STRING keys are supported for Hive MAPs.
+ */
 public class JSONSerDe implements SerDe {
   
   private StructTypeInfo rowTypeInfo;
@@ -80,11 +80,11 @@ public class JSONSerDe implements SerDe {
   private List<Object> row = new ArrayList<Object>();
   
   /**
-* An initialization function used to gather information about the table.
-* Typically, a SerDe implementation will be interested in the list of
-* column names and their types. That information will be used to help perform
-* actual serialization and deserialization of data.
-*/
+   * An initialization function used to gather information about the table.
+   * Typically, a SerDe implementation will be interested in the list of
+   * column names and their types. That information will be used to help perform
+   * actual serialization and deserialization of data.
+   */
   @Override
   public void initialize(Configuration conf, Properties tbl)
       throws SerDeException {
@@ -105,17 +105,17 @@ public class JSONSerDe implements SerDe {
   }
 
   /**
-* This method does the work of deserializing a record into Java objects that
-* Hive can work with via the ObjectInspector interface. For this SerDe, the
-* blob that is passed in is a JSON string, and the Jackson JSON parser is
-* being used to translate the string into Java objects.
-*
-* The JSON deserialization works by taking the column names in the Hive
-* table, and looking up those fields in the parsed JSON object. If the value
-* of the field is not a primitive, the object is parsed further.
-*/
-@SuppressWarnings("rawtypes")
-@Override
+   * This method does the work of deserializing a record into Java objects that
+   * Hive can work with via the ObjectInspector interface. For this SerDe, the
+   * blob that is passed in is a JSON string, and the Jackson JSON parser is
+   * being used to translate the string into Java objects.
+   * 
+   * The JSON deserialization works by taking the column names in the Hive
+   * table, and looking up those fields in the parsed JSON object. If the value
+   * of the field is not a primitive, the object is parsed further.
+   */
+  @SuppressWarnings("rawtypes")
+  @Override
   public Object deserialize(Writable blob) throws SerDeException {
     Map<?,?> root = null;
     row.clear();
@@ -169,12 +169,12 @@ public class JSONSerDe implements SerDe {
   }
   
   /**
-* Parses a JSON object according to the Hive column's type.
-*
-* @param field - The JSON object to parse
-* @param fieldTypeInfo - Metadata about the Hive column
-* @return - The parsed value of the field
-*/
+   * Parses a JSON object according to the Hive column's type.
+   * 
+   * @param field - The JSON object to parse
+   * @param fieldTypeInfo - Metadata about the Hive column
+   * @return - The parsed value of the field
+   */
   private Object parseField(Object field, TypeInfo fieldTypeInfo) {
     switch (fieldTypeInfo.getCategory()) {
     case PRIMITIVE:
@@ -198,13 +198,13 @@ public class JSONSerDe implements SerDe {
   }
   
   /**
-* Parses a JSON object and its fields. The Hive metadata is used to
-* determine how to parse the object fields.
-*
-* @param field - The JSON object to parse
-* @param fieldTypeInfo - Metadata about the Hive column
-* @return - A map representing the object and its fields
-*/
+   * Parses a JSON object and its fields. The Hive metadata is used to
+   * determine how to parse the object fields.
+   * 
+   * @param field - The JSON object to parse
+   * @param fieldTypeInfo - Metadata about the Hive column
+   * @return - A map representing the object and its fields
+   */
   private Object parseStruct(Object field, StructTypeInfo fieldTypeInfo) {
     @SuppressWarnings("unchecked")
     Map<Object,Object> map = (Map<Object,Object>)field;
@@ -219,13 +219,13 @@ public class JSONSerDe implements SerDe {
   }
 
   /**
-* Parse a JSON list and its elements. This uses the Hive metadata for the
-* list elements to determine how to parse the elements.
-*
-* @param field - The JSON list to parse
-* @param fieldTypeInfo - Metadata about the Hive column
-* @return - A list of the parsed elements
-*/
+   * Parse a JSON list and its elements. This uses the Hive metadata for the
+   * list elements to determine how to parse the elements.
+   * 
+   * @param field - The JSON list to parse
+   * @param fieldTypeInfo - Metadata about the Hive column
+   * @return - A list of the parsed elements
+   */
   private Object parseList(Object field, ListTypeInfo fieldTypeInfo) {
     @SuppressWarnings("unchecked")
     ArrayList<Object> list = (ArrayList<Object>) field;
@@ -239,14 +239,14 @@ public class JSONSerDe implements SerDe {
   }
 
   /**
-* Parse a JSON object as a map. This uses the Hive metadata for the map
-* values to determine how to parse the values. The map is assumed to have
-* a string for a key.
-*
-* @param field - The JSON list to parse
-* @param fieldTypeInfo - Metadata about the Hive column
-* @return
-*/
+   * Parse a JSON object as a map. This uses the Hive metadata for the map
+   * values to determine how to parse the values. The map is assumed to have
+   * a string for a key.
+   * 
+   * @param field - The JSON list to parse
+   * @param fieldTypeInfo - Metadata about the Hive column
+   * @return
+   */
   private Object parseMap(Object field, MapTypeInfo fieldTypeInfo) {
     @SuppressWarnings("unchecked")
     Map<Object,Object> map = (Map<Object,Object>) field;
@@ -259,36 +259,36 @@ public class JSONSerDe implements SerDe {
   }
 
   /**
-* Return an ObjectInspector for the row of data
-*/
+   * Return an ObjectInspector for the row of data
+   */
   @Override
   public ObjectInspector getObjectInspector() throws SerDeException {
     return rowOI;
   }
 
   /**
-* Unimplemented
-*/
+   * Unimplemented
+   */
   @Override
   public SerDeStats getSerDeStats() {
     return null;
   }
 
   /**
-* JSON is just a textual representation, so our serialized class
-* is just Text.
-*/
+   * JSON is just a textual representation, so our serialized class
+   * is just Text.
+   */
   @Override
   public Class<? extends Writable> getSerializedClass() {
     return Text.class;
   }
 
   /**
-* This method takes an object representing a row of data from Hive, and uses
-* the ObjectInspector to get the data for each column and serialize it. This
-* implementation deparses the row into an object that Jackson can easily
-* serialize into a JSON blob.
-*/
+   * This method takes an object representing a row of data from Hive, and uses
+   * the ObjectInspector to get the data for each column and serialize it. This
+   * implementation deparses the row into an object that Jackson can easily
+   * serialize into a JSON blob.
+   */
   @Override
   public Writable serialize(Object obj, ObjectInspector oi)
       throws SerDeException {
@@ -303,13 +303,13 @@ public class JSONSerDe implements SerDe {
   }
 
   /**
-* Deparse a Hive object into a Jackson-serializable object. This uses
-* the ObjectInspector to extract the column data.
-*
-* @param obj - Hive object to deparse
-* @param oi - ObjectInspector for the object
-* @return - A deparsed object
-*/
+   * Deparse a Hive object into a Jackson-serializable object. This uses
+   * the ObjectInspector to extract the column data.
+   * 
+   * @param obj - Hive object to deparse
+   * @param oi - ObjectInspector for the object
+   * @return - A deparsed object
+   */
   private Object deparseObject(Object obj, ObjectInspector oi) {
     switch (oi.getCategory()) {
     case LIST:
@@ -328,26 +328,26 @@ public class JSONSerDe implements SerDe {
   }
   
   /**
-* Deparses a row of data. We have to treat this one differently from
-* other structs, because the field names for the root object do not match
-* the column names for the Hive table.
-*
-* @param obj - Object representing the top-level row
-* @param structOI - ObjectInspector for the row
-* @return - A deparsed row of data
-*/
+   * Deparses a row of data. We have to treat this one differently from
+   * other structs, because the field names for the root object do not match
+   * the column names for the Hive table.
+   * 
+   * @param obj - Object representing the top-level row
+   * @param structOI - ObjectInspector for the row
+   * @return - A deparsed row of data
+   */
   private Object deparseRow(Object obj, ObjectInspector structOI) {
     return deparseStruct(obj, (StructObjectInspector)structOI, true);
   }
 
   /**
-* Deparses struct data into a serializable JSON object.
-*
-* @param obj - Hive struct data
-* @param structOI - ObjectInspector for the struct
-* @param isRow - Whether or not this struct represents a top-level row
-* @return - A deparsed struct
-*/
+   * Deparses struct data into a serializable JSON object.
+   * 
+   * @param obj - Hive struct data
+   * @param structOI - ObjectInspector for the struct
+   * @param isRow - Whether or not this struct represents a top-level row
+   * @return - A deparsed struct
+   */
   private Object deparseStruct(Object obj,
                                StructObjectInspector structOI,
                                boolean isRow) {
@@ -368,12 +368,12 @@ public class JSONSerDe implements SerDe {
   }
 
   /**
-* Deparses a primitive type.
-*
-* @param obj - Hive object to deparse
-* @param oi - ObjectInspector for the object
-* @return - A deparsed object
-*/
+   * Deparses a primitive type.
+   * 
+   * @param obj - Hive object to deparse
+   * @param oi - ObjectInspector for the object
+   * @return - A deparsed object
+   */
   private Object deparsePrimitive(Object obj, PrimitiveObjectInspector primOI) {
     return primOI.getPrimitiveJavaObject(obj);
   }
@@ -391,12 +391,12 @@ public class JSONSerDe implements SerDe {
   }
 
   /**
-* Deparses a list and its elements.
-*
-* @param obj - Hive object to deparse
-* @param oi - ObjectInspector for the object
-* @return - A deparsed object
-*/
+   * Deparses a list and its elements.
+   * 
+   * @param obj - Hive object to deparse
+   * @param oi - ObjectInspector for the object
+   * @return - A deparsed object
+   */
   private Object deparseList(Object obj, ListObjectInspector listOI) {
     List<Object> list = new ArrayList<Object>();
     List<?> field = listOI.getList(obj);
