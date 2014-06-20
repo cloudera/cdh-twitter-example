@@ -37,9 +37,9 @@ Configuring Flume (Cloudera Manager path)
 
 2. **Add the JAR to the Flume classpath**
 
-   Copy `flume-sources-1.0-SNAPSHOT.jar` to /usr/lib/flume-ng/plugins.d/twitter-streaming/lib/flume-sources-1.0-SNAPSHOT.jar
+   Copy `flume-sources-1.0-SNAPSHOT.jar` to `/usr/lib/flume-ng/plugins.d/twitter-streaming/lib/flume-sources-1.0-SNAPSHOT.jar`
 and also to 
-/var/lib/flume-ng/plugins.d/twitter-streaming/lib/flume-sources-1.0-SNAPSHOT.jar, just to be sure (actually, refer to Plugin Directories in Cloudera manager->flume->configuration->Agent(Default)). If those places don't exist, sudo mkdir them.
+`/var/lib/flume-ng/plugins.d/twitter-streaming/lib/flume-sources-1.0-SNAPSHOT.jar`, just to be sure (actually, refer to Plugin Directories in Cloudera manager->flume->configuration->Agent(Default)). If those places don't exist, `sudo mkdir` them.
 3. **Configure Flume agent in Cloudera Manager Web UI flume**
 
     Go to the Flume Service page (by selecting Flume service from the Services menu or from the All Services page).
@@ -50,7 +50,7 @@ and also to
     
     Set the Agent Name property to `TwitterAgent` whose configuration is defined in flume.conf. 
 
-    Copy the contents of flume.conf file, in its entirety, into the Configuration File field. 
+    Copy the contents of flume.conf file, in its entirety, into the Configuration File field. -- If you wish to edit the keywords and add Twitter API related data, now might be the right time to do it. 
     
     Click `Save Changes` button.
     
