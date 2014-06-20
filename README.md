@@ -37,8 +37,9 @@ Configuring Flume (Cloudera Manager path)
 
 2. **Add the JAR to the Flume classpath**
 
-   Copy `flume-sources-1.0-SNAPSHOT.jar` to /usr/share/cmf/lib/plugins/.
-
+   Copy `flume-sources-1.0-SNAPSHOT.jar` to /usr/lib/flume-ng/plugins.d/twitter-streaming/lib/flume-sources-1.0-SNAPSHOT.jar
+and also to 
+/var/lib/flume-ng/plugins.d/twitter-streaming/lib/flume-sources-1.0-SNAPSHOT.jar, just to be sure (actually, refer to Plugin Directories in Cloudera manager->flume->configuration->Agent(Default)). If those places don't exist, sudo mkdir them.
 3. **Configure Flume agent in Cloudera Manager Web UI flume**
 
     Go to the Flume Service page (by selecting Flume service from the Services menu or from the All Services page).
