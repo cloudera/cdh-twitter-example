@@ -189,10 +189,12 @@ public class JSONSerDe implements SerDe {
     Map<Object,Object> map = (Map<Object,Object>)field;
     ArrayList<TypeInfo> structTypes = fieldTypeInfo.getAllStructFieldTypeInfos();
     ArrayList<String> structNames = fieldTypeInfo.getAllStructFieldNames();
-    
+
     List<Object> structRow = new ArrayList<Object>(structTypes.size());
-    for (int i = 0; i < structNames.size(); i++) {
-      structRow.add(parseField(map.get(structNames.get(i)), structTypes.get(i)));
+    if (map != null) {
+        for (int i = 0; i < structNames.size(); i++) {
+            structRow.add(parseField(map.get(structNames.get(i)), structTypes.get(i)));
+        }
     }
     return structRow;
   }
@@ -208,11 +210,11 @@ public class JSONSerDe implements SerDe {
   private Object parseList(Object field, ListTypeInfo fieldTypeInfo) {
     ArrayList<Object> list = (ArrayList<Object>) field;
     TypeInfo elemTypeInfo = fieldTypeInfo.getListElementTypeInfo();
-    
-    for (int i = 0; i < list.size(); i++) {
-      list.set(i, parseField(list.get(i), elemTypeInfo));
+    if (list != null) {
+        for (int i = 0; i < list.size(); i++) {
+            list.set(i, parseField(list.get(i), elemTypeInfo));
+        }
     }
-    
     return list.toArray();
   }
 
@@ -228,9 +230,10 @@ public class JSONSerDe implements SerDe {
   private Object parseMap(Object field, MapTypeInfo fieldTypeInfo) {
     Map<Object,Object> map = (Map<Object,Object>) field;
     TypeInfo valueTypeInfo = fieldTypeInfo.getMapValueTypeInfo();
-    
-    for (Map.Entry<Object,Object> entry : map.entrySet()) {
-      map.put(entry.getKey(), parseField(entry.getValue(), valueTypeInfo));
+    if (map != null) {
+        for (Map.Entry<Object, Object> entry : map.entrySet()) {
+            map.put(entry.getKey(), parseField(entry.getValue(), valueTypeInfo));
+        }
     }
     return map;
   }
