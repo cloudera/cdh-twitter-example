@@ -30,4 +30,5 @@ public class TwitterSourceConstants {
 
   public static final String KEYWORDS_KEY = "keywords";
   public static final String USERS_KEY = "users";
+  public static final String LANGUAGES_KEY = "language";
 }
