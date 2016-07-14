@@ -1,13 +1,13 @@
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
+ * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
+ * regarding copyright ownership. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -114,6 +114,7 @@ public class JSONSerDe implements SerDe {
    * table, and looking up those fields in the parsed JSON object. If the value
    * of the field is not a primitive, the object is parsed further.
    */
+  @SuppressWarnings("rawtypes")
   @Override
   public Object deserialize(Writable blob) throws SerDeException {
     Map<?,?> root = null;
@@ -129,9 +130,9 @@ public class JSONSerDe implements SerDe {
     }
 
     // Lowercase the keys as expected by hive
-    Map<String, Object> lowerRoot = new HashMap();
+    Map<String, Object> lowerRoot = new HashMap<String, Object>();
     for(Map.Entry entry: root.entrySet()) {
-      lowerRoot.put(((String)entry.getKey()).toLowerCase(), entry.getValue());
+      lowerRoot.put(patchKey((String) entry.getKey()), entry.getValue());
     }
     root = lowerRoot;
     
@@ -146,6 +147,25 @@ public class JSONSerDe implements SerDe {
       row.add(value);
     }
     return row;
+  }
+  
+  /*
+   * replace dot/minus and do lowerCase at once
+   */
+  static final String patchKey(String key) {
+    StringBuilder buffer = new StringBuilder(key.length());
+    for (char character : key.toCharArray()) {
+      switch (character) {
+        case '.':
+        case '-':
+          buffer.append('_');
+          break;
+        default:
+          buffer.append(Character.toLowerCase(character));
+          break;
+      }
+    }
+    return buffer.toString();
   }
   
   /**
@@ -186,6 +206,7 @@ public class JSONSerDe implements SerDe {
    * @return - A map representing the object and its fields
    */
   private Object parseStruct(Object field, StructTypeInfo fieldTypeInfo) {
+    @SuppressWarnings("unchecked")
     Map<Object,Object> map = (Map<Object,Object>)field;
     ArrayList<TypeInfo> structTypes = fieldTypeInfo.getAllStructFieldTypeInfos();
     ArrayList<String> structNames = fieldTypeInfo.getAllStructFieldNames();
@@ -208,6 +229,7 @@ public class JSONSerDe implements SerDe {
    * @return - A list of the parsed elements
    */
   private Object parseList(Object field, ListTypeInfo fieldTypeInfo) {
+    @SuppressWarnings("unchecked")
     ArrayList<Object> list = (ArrayList<Object>) field;
     TypeInfo elemTypeInfo = fieldTypeInfo.getListElementTypeInfo();
     if (list != null) {
@@ -228,6 +250,7 @@ public class JSONSerDe implements SerDe {
    * @return
    */
   private Object parseMap(Object field, MapTypeInfo fieldTypeInfo) {
+    @SuppressWarnings("unchecked")
     Map<Object,Object> map = (Map<Object,Object>) field;
     TypeInfo valueTypeInfo = fieldTypeInfo.getMapValueTypeInfo();
     if (map != null) {
